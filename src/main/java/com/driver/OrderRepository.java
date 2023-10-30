@@ -39,15 +39,23 @@ public class OrderRepository {
 
     public void addOrder(Order order){
         String oId = order.getId();
-        ordersMap.put(oId, order);
+        int dTime = order.getDeliveryTime();
+        if(oId.length() != 0 && dTime != 0){
+            ordersMap.put(oId, order);
+        }
     }
 
     public void addPartner(DeliveryPartner partner){
         String pId = partner.getId();
-        partnersMap.put(pId, partner);
+        if(pId.length() != 0){
+            partnersMap.put(pId, partner);
+        }
     }
 
     public void assignOrder(String pId, String oId){
+        if(!partnersMap.containsKey(pId) || !ordersMap.containsKey(oId)){
+            return;
+        }
         if(!partnerVsOrders.containsKey(pId)){
             partnerVsOrders.put(pId, new ArrayList<String>());
         }
@@ -60,24 +68,39 @@ public class OrderRepository {
     }
 
     public Order getOrderById(String oId){
-        return ordersMap.get(oId);
+        if(ordersMap.containsKey(oId)){
+            return ordersMap.get(oId);
+        }
+        return null;
     }
 
     public DeliveryPartner getPartnerById(String pId){
-        return partnersMap.get(pId);
+        if(partnersMap.containsKey(pId)){
+            return partnersMap.get(pId);
+        }
+        return null;
     }
 
     public int numOfOrdersAssignedToPartner(String pId){
-        return partnersMap.get(pId).getNumberOfOrders();
+        if(partnersMap.containsKey(pId)){
+            return partnersMap.get(pId).getNumberOfOrders();
+        }
+        return 0;
     }
 
     public List<String> getListOfOrdersByPartner(String pId){
-        return partnerVsOrders.get(pId);
+        if(partnerVsOrders.containsKey(pId)){
+            return partnerVsOrders.get(pId);
+        }
+        return null;
     }
 
     public List<String> getAllOrders(){
-        List<String> orders = new ArrayList(ordersMap.keySet());
-        return orders;
+        if(ordersMap.size() > 0){
+            List<String> orders = new ArrayList(ordersMap.keySet());
+            return orders;
+        }
+        return null;
     }
 
     public int getCountOfUnassignedOrders(){
@@ -85,8 +108,10 @@ public class OrderRepository {
     }
 
     public void deletePartner(String pId){
-        // remove from partners map
-        partnersMap.remove(pId);
+        if(partnersMap.containsKey(pId)){
+            // remove from partners map
+            partnersMap.remove(pId);
+        }
 
         // need to un assign this partner orders
         if(partnerVsOrders.containsKey(pId)){
@@ -101,8 +126,10 @@ public class OrderRepository {
     }
 
     public void deleteOrder(String oId){
-        // remove from orders map
-        ordersMap.remove(oId);
+        if(ordersMap.containsKey(oId)){
+            // remove from orders map
+            ordersMap.remove(oId);
+        }
 
         // need to remove from partner's orders list also
         // get assigned partner

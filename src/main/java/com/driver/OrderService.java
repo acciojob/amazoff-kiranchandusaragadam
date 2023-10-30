@@ -48,6 +48,9 @@ public class OrderService {
     }
 
     public int getCountOfUndeliveredOrders(String pId, String time){
+        if(orderRepository.getListOfOrdersByPartner(pId) == null || time.length() == 0){
+            return 0;
+        }
         // convert time from string to integer
         String hrs = time.substring(0, 2);
         String mnts = time.substring(3);
@@ -69,6 +72,9 @@ public class OrderService {
     }
 
     public String getLastDeliveryTime(String pId){
+        if(orderRepository.getListOfOrdersByPartner(pId) == null){
+            return null;
+        }
         // get order list of that partner
         List<String> partnerOrders = orderRepository.getListOfOrdersByPartner(pId);
 
